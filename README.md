@@ -25,4 +25,3 @@ Running `npm run dev` will watch your plugin's source code and automatically bun
 ## Usage
 
 Explain the usage of this plugin and its effect on the final build.
-
