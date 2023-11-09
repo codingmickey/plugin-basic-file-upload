@@ -1,4 +1,4 @@
-# plugin-{your-plugin-name}
+# plugin-basic-file-upload
 
 [![NPM Downloads](https://img.shields.io/npm/dt/plugin-{your-plugin-name})](https://www.npmjs.com/package/plugin-{your-plugin-name})
 
