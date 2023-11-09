@@ -4,10 +4,10 @@ import type {
   CreateServerParams,
   DsgContext,
   Events,
-  ModuleMap
-} from '@amplication/code-gen-types';
-import { EventNames } from '@amplication/code-gen-types';
-import { resolve } from 'path';
+  ModuleMap,
+} from "@amplication/code-gen-types";
+import { EventNames } from "@amplication/code-gen-types";
+import { resolve } from "path";
 
 class ExamplePlugin implements AmplicationPlugin {
   /**
@@ -17,11 +17,11 @@ class ExamplePlugin implements AmplicationPlugin {
     return {
       [EventNames.CreateServer]: {
         before: this.beforeCreateServer,
-        after: this.afterCreateServer
+        after: this.afterCreateServer,
       },
       [EventNames.CreateAdminUI]: {
-        before: this.beforeCreateAdminUI
-      }
+        before: this.beforeCreateAdminUI,
+      },
     };
   }
   // You can combine many events in one plugin in order to change the related files.
@@ -37,14 +37,14 @@ class ExamplePlugin implements AmplicationPlugin {
   async afterCreateServer(
     context: DsgContext,
     eventParams: CreateServerParams,
-    modules: ModuleMap
+    modules: ModuleMap,
   ): Promise<ModuleMap> {
     // Here you can get the context, eventParams and the modules that Amplication created.
     // Then you can manipulate the modules, add new ones, or create your own.
-    const staticPath = resolve(__dirname, './static');
+    const staticPath = resolve(__dirname, "./static");
     const staticsFiles = await context.utils.importStaticModules(
       staticPath,
-      context.serverDirectories.srcDirectory
+      context.serverDirectories.srcDirectory,
     );
     await modules.merge(staticsFiles);
     return modules; // You must return the generated modules you want to generate at this part of the build.

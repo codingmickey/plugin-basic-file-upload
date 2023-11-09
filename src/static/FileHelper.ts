@@ -1,11 +1,11 @@
-import { diskStorage } from 'multer';
-import { FileUpload, GraphQLUpload } from 'graphql-upload';
-import fs from 'fs';
-import path from 'path';
-import crypto from 'crypto';
+import { diskStorage } from "multer";
+import { FileUpload, GraphQLUpload } from "graphql-upload";
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
 
 export const generateMulterOptions = (
-  entity: string
+  entity: string,
   //   fieldName: string
 ) => {
   return {
@@ -15,14 +15,17 @@ export const generateMulterOptions = (
       filename: async (req, file, cb) => {
         const prefix = file.fieldname;
         const extension = path.extname(file.originalname);
-        const timestamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, ''); // Format the timestamp
+        const timestamp = new Date()
+          .toISOString()
+          .replace(/[-:]/g, "")
+          .replace(/\.\d+/, ""); // Format the timestamp
         const uuid = crypto.randomUUID();
 
         const fileName = `${prefix}_${timestamp}_${uuid}${extension}`;
 
         cb(null, fileName);
-      }
-    })
+      },
+    }),
   };
 };
 
@@ -30,7 +33,7 @@ export const generateUploadFields = (fileFields: string[]) => {
   return Array.from(fileFields).map((fieldName) => {
     return {
       name: fieldName,
-      maxCount: 1
+      maxCount: 1,
     };
   });
 };
@@ -50,7 +53,7 @@ export const fileToJSON = <T>(
   fileNames: string[],
   files: {
     [key in (typeof fileNames)[number]]?: Express.Multer.File[];
-  }
+  },
 ) => {
   fileNames.forEach((fileField) => {
     if (files?.[fileField]) {
@@ -58,13 +61,13 @@ export const fileToJSON = <T>(
       (data as any)[fileField] = {
         filePath,
         fileExtension: path.extname(originalname),
-        fileName: filename
+        fileName: filename,
       };
     } else {
       (data as any)[fileField] = {
         fileExtension: null,
         filePath: null,
-        fileName: null
+        fileName: null,
       };
     }
   });
@@ -72,7 +75,7 @@ export const fileToJSON = <T>(
 
 export const graphqlUpload = async (
   file: FileUpload,
-  fieldName: string
+  fieldName: string,
 ): Promise<{ [key: string]: FileJSONType }> => {
   try {
     const chunks = [];
@@ -81,10 +84,10 @@ export const graphqlUpload = async (
     }
 
     // TODO: path From env
-    const rootFolderPath = 'public';
-    const entity = 'user';
-    const filePath = path.join(__dirname, '..', '..', rootFolderPath, entity);
-    const rootServerPath = path.join(__dirname, '..', '..');
+    const rootFolderPath = "public";
+    const entity = "user";
+    const filePath = path.join(__dirname, "..", "..", rootFolderPath, entity);
+    const rootServerPath = path.join(__dirname, "..", "..");
 
     // TODO: Need to refactor this when the path is inputed by the user.. and make different folders
     // Create a public directory if it doesn't exist
@@ -92,7 +95,10 @@ export const graphqlUpload = async (
       fs.mkdirSync(filePath, { recursive: true });
     }
 
-    const timestamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, ''); // Format the timestamp
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[-:]/g, "")
+      .replace(/\.\d+/, ""); // Format the timestamp
     const uuid = crypto.randomUUID();
 
     const extension = path.extname(file.filename);
@@ -108,8 +114,8 @@ export const graphqlUpload = async (
       [fieldName]: {
         fileName: `${fieldName}_${timestamp}_${uuid}${extension}`,
         fileExtension: extension,
-        filePath: filePathFromRoot
-      }
+        filePath: filePathFromRoot,
+      },
     };
   } catch (err) {
     console.error(err);
@@ -124,12 +130,12 @@ type graphqlFileType = {
 
 export const graphqlUploadMultiple = async <T, U>(
   args: U,
-  graphqlFiles: graphqlFileType[]
+  graphqlFiles: graphqlFileType[],
 ): Promise<{ newArgs: U; fileContent: { [x: string]: FileJSONType }[] }> => {
   const fileContent = await Promise.all(
     graphqlFiles.map((file) => {
       return graphqlUpload(file.file, file.entity);
-    })
+    }),
   );
 
   graphqlFiles.forEach((file, index) => {
@@ -144,7 +150,7 @@ export const generateGraphqlUploadArgs = (fileFields: string[]) => {
   return fileFields.map((fieldName) => {
     return {
       name: fieldName,
-      type: () => GraphQLUpload
+      type: () => GraphQLUpload,
     };
   });
 };
